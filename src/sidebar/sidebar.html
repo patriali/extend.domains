@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Extend.Domains</title>
+    <link rel="stylesheet" href="sidebar.css" />
+  </head>
+  <body>
+    <form id="searchbar" autocomplete="off">
+      <div class="search-field">
+        <svg class="search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input id="search-input" type="text" placeholder="Look up any domain…" spellcheck="false" enterkeyhint="search" />
+      </div>
+      <button type="button" id="use-current-tab" class="tab-btn" title="Look up the current tab's domain">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18z" />
+        </svg>
+      </button>
+    </form>
+    <main id="app">
+      <section class="empty-state" id="empty-state">
+        <h1>Extend.Domains</h1>
+        <p>Highlight a domain name on any page, then open the lookup from the right-click menu or the toolbar button.</p>
+      </section>
+    </main>
+    <div id="registerbar" hidden></div>
+    <script src="sidebar.js"></script>
+  </body>
+</html>

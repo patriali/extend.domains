@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Extend.Domains settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main>
+      <div class="appearance">
+        <span>Theme</span>
+        <div class="segmented" id="theme">
+          <button type="button" data-theme-choice="system">System</button>
+          <button type="button" data-theme-choice="light">Light</button>
+          <button type="button" data-theme-choice="dark">Dark</button>
+        </div>
+      </div>
+
+      <div class="appearance">
+        <span>Registrar</span>
+        <select id="registrar" class="select"></select>
+      </div>
+
+      <nav class="tabs" id="tabs">
+        <button type="button" class="tab" data-tab="layout" aria-selected="true">Layout</button>
+        <button type="button" class="tab" data-tab="detection">Detection</button>
+        <button type="button" class="tab" data-tab="scoring">Scoring</button>
+      </nav>
+
+      <section class="tab-panel" data-panel="layout">
+        <h1>Sidebar layout</h1>
+        <p class="muted">
+          Show, hide, and reorder the sidebar blocks. Changes apply immediately to
+          any open sidebar.
+        </p>
+        <ul id="layout-list" class="layout-list"></ul>
+        <div class="actions">
+          <button type="button" id="layout-reset">Reset to defaults</button>
+        </div>
+
+        <h2>Research tools</h2>
+        <p class="muted">
+          Which tools the Research block links to. Plain links only —
+          nothing is fetched, and nothing is sent anywhere until you click one.
+        </p>
+        <ul id="research-list" class="opt-list"></ul>
+        <div class="actions">
+          <button type="button" id="research-reset">Reset to defaults</button>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="detection" hidden>
+        <h1>Obfuscated domains</h1>
+        <p class="muted">
+          People often write domains so a post won't turn them into a link —
+          <code>example dot com</code>, <code>example[.]com</code>,
+          <code>example (dot) com</code>, <code>example*.com</code>,
+          <code>example • com</code>. When enabled,
+          looking one up (right-click, the search box, or the current-tab button)
+          resolves these. Changes apply immediately.
+        </p>
+        <ul class="opt-list">
+          <li class="opt-row">
+            <label class="opt-toggle">
+              <input type="checkbox" id="deob-enabled" />
+              <span>
+                Detect obfuscated domains
+                <small class="muted">
+                  Marked separators: the word “dot”, <code>[.]</code>,
+                  <code>(dot)</code>, spaced dots, <code>*.</code>, bullets
+                  (<code>• · ・</code>)
+                </small>
+              </span>
+            </label>
+          </li>
+          <li class="opt-row">
+            <label class="opt-toggle">
+              <input type="checkbox" id="deob-spaces" />
+              <span>
+                Also treat spaces as dots
+                <small class="warn">
+                  ⚠ May match ordinary phrases: “call me” → call.me, “log in” → log.in
+                </small>
+              </span>
+            </label>
+          </li>
+        </ul>
+      </section>
+
+      <section class="tab-panel" data-panel="scoring" hidden>
+      <h1>Local score tuning</h1>
+      <p class="muted">
+        These weights drive the local score. Changes apply immediately — an open
+        sidebar re-scores as you save. Component weights are relative (they are
+        normalized by their sum); penalties are 0–1 multipliers.
+      </p>
+
+      <form id="form">
+        <fieldset id="fs-weights"><legend>Component weights</legend></fieldset>
+        <fieldset id="fs-curve"><legend>Length curve</legend></fieldset>
+        <fieldset id="fs-penalties"><legend>Penalties</legend></fieldset>
+        <fieldset id="fs-words"><legend>Word segmentation</legend></fieldset>
+        <fieldset>
+          <legend>TLD scores</legend>
+          <div id="fs-tld-default"></div>
+          <label class="stack">
+            <span>Per-TLD values, one per line: <code>tld value</code></span>
+            <textarea id="tld-scores" rows="8" spellcheck="false"></textarea>
+          </label>
+        </fieldset>
+        <div class="actions">
+          <button type="submit" class="primary">Save</button>
+          <button type="button" id="reset">Reset to defaults</button>
+          <span id="status" class="muted"></span>
+        </div>
+      </form>
+
+      <h2>Try it</h2>
+      <p class="muted">Scored live with the values in the form above (unsaved edits included).</p>
+      <div class="try">
+        <input id="try-input" placeholder="quietharbor.com" spellcheck="false" />
+        <span id="try-score" class="pill"></span>
+      </div>
+      <div id="try-breakdown" class="muted"></div>
+      </section>
+    </main>
+    <script src="options.js"></script>
+  </body>
+</html>
