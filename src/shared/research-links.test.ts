@@ -6,6 +6,7 @@ import {
   RESEARCH_TOOLS,
   researchToolUrl,
 } from "./research-links.ts";
+import { withUtm } from "./outbound.ts";
 
 test("undefined/garbage yields each tool's own default", () => {
   for (const stored of [undefined, null, 42, "nope"]) {
@@ -31,6 +32,32 @@ test("enabled list follows declaration order", () => {
   const on = enabledResearchTools(normalizeResearchLinks(undefined)).map((t) => t.id);
   assert.deepEqual(on, RESEARCH_TOOLS.filter((t) => t.defaultEnabled).map((t) => t.id));
   assert.ok(!on.includes("ahrefs"));
+});
+
+test("the default-on set is pinned", () => {
+  // Guards against a default silently flipping when a tool is added or edited.
+  assert.deepEqual(
+    RESEARCH_TOOLS.filter((t) => t.defaultEnabled).map((t) => t.id),
+    ["atom", "namebio", "instantdomainsearch", "dotdb", "wipo", "trademarkia"],
+  );
+});
+
+test("the Notify.Domains tools take the full domain", () => {
+  const byId = Object.fromEntries(RESEARCH_TOOLS.map((t) => [t.id, t]));
+  const d = { registrableDomain: "example.com", label: "example" };
+  assert.equal(
+    researchToolUrl(byId["notifyblacklist"]!, d),
+    "https://notify.domains/domain-blacklist-checker-tool/?d=example.com",
+  );
+  assert.equal(
+    researchToolUrl(byId["notifyrenewal"]!, d),
+    "https://notify.domains/domain-renewal-cost-checker-tool/?d=example.com",
+  );
+  // The sidebar tags every research link on render (extItem -> withUtm).
+  assert.equal(
+    withUtm(researchToolUrl(byId["notifyblacklist"]!, d)),
+    "https://notify.domains/domain-blacklist-checker-tool/?d=example.com&utm_source=extenddomains.com",
+  );
 });
 
 test("url scope picks the domain or the bare label", () => {

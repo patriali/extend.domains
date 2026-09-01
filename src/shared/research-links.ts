@@ -39,7 +39,7 @@ export const RESEARCH_TOOLS: readonly ResearchTool[] = [
     note: "valuation",
     scope: "domain",
     template: "https://godaddy.com/domain-value-appraisal/appraisal?domainToCheck={q}",
-    defaultEnabled: true,
+    defaultEnabled: false,
   },
   {
     id: "namebio",
@@ -66,6 +66,22 @@ export const RESEARCH_TOOLS: readonly ResearchTool[] = [
     defaultEnabled: true,
   },
   {
+    id: "notifyblacklist",
+    label: "Notify.Domains blacklist",
+    note: "spam blocklists",
+    scope: "domain",
+    template: "https://notify.domains/domain-blacklist-checker-tool/?d={q}",
+    defaultEnabled: false,
+  },
+  {
+    id: "notifyrenewal",
+    label: "Notify.Domains renewal cost",
+    note: "renewal pricing",
+    scope: "domain",
+    template: "https://notify.domains/domain-renewal-cost-checker-tool/?d={q}",
+    defaultEnabled: false,
+  },
+  {
     id: "wipo",
     label: "WIPO UDRP decisions",
     note: "domain disputes",
@@ -88,7 +104,7 @@ export const RESEARCH_TOOLS: readonly ResearchTool[] = [
     scope: "label",
     template:
       "https://www.tmdn.org/tmview/#/tmview/results?page=1&pageSize=30&criteria=C&basicSearch={q}",
-    defaultEnabled: true,
+    defaultEnabled: false,
   },
   {
     id: "ahrefs",
