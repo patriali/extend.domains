@@ -3,10 +3,17 @@
 
 import browser from "webextension-polyfill";
 import type { DnsSummary } from "../lib/doh";
+import {
+  buyNowUrl,
+  MARKETPLACE_NAMES,
+  marketplaceFromNs,
+  type MarketplaceId,
+} from "../lib/marketplace";
 import type { SiteMetadata } from "../lib/metadata";
 import type { RdapResult } from "../lib/rdap";
 import type { ScoreResult } from "../lib/scorer";
 import { waybackLink, type WaybackResult } from "../lib/wayback";
+import { BUY_NOW_KEY, loadBuyNow } from "../shared/buy-now";
 import { clearHistory, HISTORY_KEY, readHistory, type HistoryEntry } from "../shared/history";
 import {
   DEFAULT_LAYOUT,
@@ -15,6 +22,7 @@ import {
   type SectionId,
 } from "../shared/layout";
 import { loadLayout } from "../shared/layout-store";
+import { withUtm } from "../shared/outbound";
 import {
   enabledResearchTools,
   normalizeResearchLinks,
@@ -108,6 +116,7 @@ let history: HistoryEntry[] = [];
 let layout: SectionConfig[] = DEFAULT_LAYOUT;
 let registrar: Registrar | null = null;
 let researchLinks: ResearchLinkSettings = normalizeResearchLinks(undefined);
+let buyNowEnabled = true;
 let lastState: LookupState = { kind: "idle" };
 
 void readHistory().then((list) => {
@@ -124,6 +133,10 @@ void loadRegistrar().then((reg) => {
 });
 void loadResearchLinks().then((links) => {
   researchLinks = links;
+  render(lastState);
+});
+void loadBuyNow().then((on) => {
+  buyNowEnabled = on;
   render(lastState);
 });
 browser.storage.onChanged.addListener((changes, area) => {
@@ -151,6 +164,12 @@ browser.storage.onChanged.addListener((changes, area) => {
       render(lastState);
     });
   }
+  if (BUY_NOW_KEY in changes) {
+    void loadBuyNow().then((on) => {
+      buyNowEnabled = on;
+      render(lastState);
+    });
+  }
 });
 
 browser.runtime.onMessage.addListener((message: unknown) => {
@@ -170,19 +189,36 @@ function sectionEnabled(id: SectionId): boolean {
 // Bottom bar, outside #app so it stays pinned while the results scroll.
 const registerBar = document.getElementById("registerbar")!;
 
-/** Shows the call to action only for a name RDAP reports as unregistered. */
+/**
+ * The bar carries one call to action, and the two are mutually exclusive:
+ * "Register" for a name RDAP reports as unregistered, "Buy now" for a taken one
+ * we can tell is listed on a marketplace. Neither → the bar stays hidden.
+ */
 function renderRegisterBar(state: LookupState): void {
   registerBar.replaceChildren();
-  if (
-    state.kind === "domain" &&
-    state.rdap.status === "ok" &&
-    state.rdap.data.kind === "unregistered"
-  ) {
+  if (state.kind !== "domain") {
+    registerBar.hidden = true;
+    return;
+  }
+  if (state.rdap.status === "ok" && state.rdap.data.kind === "unregistered") {
     registerBar.append(registerButton(state.domain.ascii));
     registerBar.hidden = false;
-  } else {
-    registerBar.hidden = true;
+    return;
   }
+  const market = listedMarketplace(state);
+  if (market !== null) {
+    registerBar.append(buyNowButton(market, state.domain.ascii));
+    registerBar.hidden = false;
+    return;
+  }
+  registerBar.hidden = true;
+}
+
+/** Marketplace this name is listed on, read off its delegation. Null while the
+ * user has the button switched off. */
+function listedMarketplace(state: DomainLookupState): MarketplaceId | null {
+  if (!buyNowEnabled || state.dns.status !== "ok") return null;
+  return marketplaceFromNs(state.dns.data.ns);
 }
 
 function render(state: LookupState): void {
@@ -400,6 +436,18 @@ function registerButton(ascii: string): HTMLElement {
   const reg = registrar ?? REGISTRARS[0]!;
   const link = el("a", { className: "btn btn-register" }, `Register on ${reg.name} ↗`);
   link.href = withUtm(registrarSearchUrl(reg, ascii));
+  link.target = "_blank";
+  link.rel = "noreferrer noopener";
+  return link;
+}
+
+function buyNowButton(id: MarketplaceId, ascii: string): HTMLElement {
+  const link = el(
+    "a",
+    { className: "btn btn-register" },
+    `Buy now on ${MARKETPLACE_NAMES[id]} ↗`,
+  );
+  link.href = withUtm(buyNowUrl(id, ascii));
   link.target = "_blank";
   link.rel = "noreferrer noopener";
   return link;
@@ -782,13 +830,6 @@ function researchSection(d: DomainLookupState["domain"]): HTMLElement | null {
     s.append(extItem(tool.label, researchToolUrl(tool, d), tool.note));
   }
   return s;
-}
-
-// Tag every outbound third-party link so partner sites can attribute the
-// referral back to us. Appends as a fresh query param, preserving any the URL
-// already carries.
-function withUtm(url: string): string {
-  return `${url}${url.includes("?") ? "&" : "?"}utm_source=extenddomains.com`;
 }
 
 function extItem(label: string, href: string, note: string): HTMLElement {

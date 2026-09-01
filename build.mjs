@@ -87,6 +87,12 @@ function manifestFor(target) {
     sidebar_action: {
       default_panel: "sidebar.html",
       default_title: "Extend.Domains",
+      // Firefox's sidebar header renders this icon only; it does not fall back
+      // to the top-level `icons` the way the sidebar switcher menu does.
+      default_icon: {
+        16: "icons/icon-16.png",
+        32: "icons/icon-32.png",
+      },
       open_at_install: false,
     },
     browser_specific_settings: {

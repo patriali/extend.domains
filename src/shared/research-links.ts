@@ -34,11 +34,27 @@ export const RESEARCH_TOOLS: readonly ResearchTool[] = [
     defaultEnabled: true,
   },
   {
+    id: "godaddy",
+    label: "GoDaddy appraisal",
+    note: "valuation",
+    scope: "domain",
+    template: "https://godaddy.com/domain-value-appraisal/appraisal?domainToCheck={q}",
+    defaultEnabled: true,
+  },
+  {
     id: "namebio",
     label: "NameBio sale history",
     note: "comparable sales",
     scope: "domain",
     template: "https://namebio.com/{q}",
+    defaultEnabled: true,
+  },
+  {
+    id: "instantdomainsearch",
+    label: "Instant Domain Search",
+    note: "availability by TLD",
+    scope: "label",
+    template: "https://instantdomainsearch.com/?q={q}",
     defaultEnabled: true,
   },
   {
@@ -63,6 +79,15 @@ export const RESEARCH_TOOLS: readonly ResearchTool[] = [
     note: "trademark check",
     scope: "label",
     template: "https://www.trademarkia.com/search/trademarks?query={q}",
+    defaultEnabled: true,
+  },
+  {
+    id: "tmview",
+    label: "TMView search",
+    note: "global trademark registers",
+    scope: "label",
+    template:
+      "https://www.tmdn.org/tmview/#/tmview/results?page=1&pageSize=30&criteria=C&basicSearch={q}",
     defaultEnabled: true,
   },
   {

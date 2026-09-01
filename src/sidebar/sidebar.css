@@ -3,10 +3,10 @@
 :root {
   color-scheme: light dark;
 
-  /* Neutral grayscale base. The logo's amber #FFC233 appears only in small
+  /* Neutral grayscale base. A light blue #38BDF8 appears only in small
      doses — the primary button, focus rings, links, section bullets — so the
-     brand is a quiet accent rather than the whole surface. --on-accent is the
-     text that sits on an amber fill (navy, as the logo's marks are). */
+     accent is a quiet highlight rather than the whole surface. --on-accent is
+     the text that sits on a light-blue fill (the logo's navy). */
   --bg: #f6f6f7;
   --surface: #ffffff;
   --surface-2: #ededef;
@@ -15,8 +15,8 @@
   --fg-subtle: #96969c;
   --border: #e5e5e8;
 
-  --c-accent: #ffc233;
-  --t-accent: #8a5d00;
+  --c-accent: #38bdf8;
+  --t-accent: #0369a1;
   --on-accent: #16202e;
   --link: #3568d4;
   --c-good: #22c55e;
@@ -36,7 +36,7 @@
    Keep the two blocks identical. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    /* Neutral gray surfaces; the logo navy survives only as the accent. */
+    /* Neutral gray surfaces; the accent stays the same light blue. */
     --bg: #17171a;
     --surface: #1e1e22;
     --surface-2: #2a2a2f;
@@ -45,8 +45,8 @@
     --fg-subtle: #6a6a72;
     --border: #2e2e34;
 
-    --c-accent: #ffc233;
-    --t-accent: #f5c451;
+    --c-accent: #38bdf8;
+    --t-accent: #7dd3fc;
     --on-accent: #16202e;
     --link: #6ea8fe;
     --c-good: #22c55e;
@@ -70,8 +70,8 @@
   --fg-subtle: #6a6a72;
   --border: #2e2e34;
 
-  --c-accent: #ffc233;
-  --t-accent: #f5c451;
+  --c-accent: #38bdf8;
+  --t-accent: #7dd3fc;
   --on-accent: #16202e;
   --link: #6ea8fe;
   --c-good: #22c55e;

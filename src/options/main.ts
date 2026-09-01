@@ -2,6 +2,7 @@
 // shared/weights.ts, with a live scorer for feedback. Pure-local — the page
 // bundles the scorer itself and never touches the network.
 
+import { loadBuyNow, saveBuyNow } from "../shared/buy-now";
 import {
   type DeobfuscationSettings,
   loadDeobfuscation,
@@ -50,6 +51,16 @@ registrarSelect.addEventListener("change", () => {
 });
 void loadRegistrar().then((reg) => {
   registrarSelect.value = reg.id;
+});
+
+// ── Buy now button ──────────────────────────────────────────────────────────
+
+const buyNowEnabled = document.getElementById("buy-now-enabled") as HTMLInputElement;
+buyNowEnabled.addEventListener("change", () => {
+  void saveBuyNow(buyNowEnabled.checked);
+});
+void loadBuyNow().then((on) => {
+  buyNowEnabled.checked = on;
 });
 
 // ── Obfuscated-domain detection ─────────────────────────────────────────────

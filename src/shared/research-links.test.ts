@@ -41,4 +41,21 @@ test("url scope picks the domain or the bare label", () => {
     "https://ahrefs.com/backlink-checker/?input=quiet%20harbor.com&mode=subdomains",
   );
   assert.equal(researchToolUrl(byId["dotdb"]!, d), "https://dotdb.com/search?keyword=quiet%20harbor&position=any");
+  assert.equal(
+    researchToolUrl(byId["godaddy"]!, d),
+    "https://godaddy.com/domain-value-appraisal/appraisal?domainToCheck=quiet%20harbor.com",
+  );
+  assert.equal(
+    researchToolUrl(byId["instantdomainsearch"]!, d),
+    "https://instantdomainsearch.com/?q=quiet%20harbor",
+  );
+});
+
+test("tmview keeps its hash route intact", () => {
+  const byId = Object.fromEntries(RESEARCH_TOOLS.map((t) => [t.id, t]));
+  const url = researchToolUrl(byId["tmview"]!, { registrableDomain: "example.com", label: "example" });
+  assert.equal(
+    url,
+    "https://www.tmdn.org/tmview/#/tmview/results?page=1&pageSize=30&criteria=C&basicSearch=example",
+  );
 });
