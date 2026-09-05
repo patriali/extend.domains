@@ -157,19 +157,6 @@ a:hover {
   border-bottom: 1px solid var(--border);
 }
 
-/* Extension mark, anchoring the row's left end the way the tab button does its
-   right. Purely decorative — alt="" keeps it out of the accessibility tree, and
-   the SVG carries its own opaque ground so it reads in both themes. */
-.brand-mark {
-  flex: none;
-  /* Stretches to the row height like .tab-btn does at the other end, so the
-     mark always matches the search field however its padding or font changes.
-     Width follows from the icon's 1:1 ratio — never hardcode the pair. */
-  align-self: stretch;
-  aspect-ratio: 1;
-  background: url("icons/icon.svg") center / contain no-repeat;
-}
-
 .search-field {
   flex: 1;
 }
