@@ -58,6 +58,12 @@ h1 {
   margin-bottom: 16px;
 }
 
+.access {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .select {
   padding: 5px 10px;
   border: 1px solid var(--border);

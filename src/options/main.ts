@@ -2,6 +2,8 @@
 // shared/weights.ts, with a live scorer for feedback. Pure-local — the page
 // bundles the scorer itself and never touches the network.
 
+import browser from "webextension-polyfill";
+
 import { loadBuyNow, saveBuyNow } from "../shared/buy-now";
 import {
   type DeobfuscationSettings,
@@ -19,6 +21,7 @@ import {
   resetResearchLinks,
   saveResearchLinks,
 } from "../shared/research-links-store";
+import { ALL_ORIGINS, hasAccess } from "../shared/net-permissions";
 import { initTheme, isTheme, loadTheme, saveTheme, type Theme } from "../shared/theme";
 import { loadWeights, mergeWeights, resetWeights, saveWeights } from "../shared/weights";
 
@@ -52,6 +55,34 @@ registrarSelect.addEventListener("change", () => {
 void loadRegistrar().then((reg) => {
   registrarSelect.value = reg.id;
 });
+
+// ── Site access ─────────────────────────────────────────────────────────────
+// Firefox MV3 hands out no host permissions at install, so without this the
+// only route to a working lookup is triggering a failure in the sidebar and
+// using the grant button there. The request needs a user gesture, which is why
+// it lives on a page and not in the background.
+
+const accessStatus = document.getElementById("access-status")!;
+const accessGrant = document.getElementById("access-grant") as HTMLButtonElement;
+
+function reflectAccess(granted: boolean): void {
+  accessStatus.textContent = granted
+    ? "Granted"
+    : "DNS, preview, and archive lookups are blocked";
+  accessGrant.hidden = granted;
+}
+
+accessGrant.addEventListener("click", () => {
+  void browser.permissions
+    .request({ origins: ALL_ORIGINS })
+    .then(reflectAccess)
+    .catch(() => {
+      accessStatus.textContent = "Grant site access in the browser's add-on settings";
+      accessGrant.hidden = true;
+    });
+});
+
+void hasAccess(ALL_ORIGINS).then(reflectAccess);
 
 // ── Buy now button ──────────────────────────────────────────────────────────
 

@@ -17,7 +17,7 @@ import type {
 } from "../shared/messages";
 import { loadDeobfuscation } from "../shared/deobfuscation";
 import { pushHistory } from "../shared/history";
-import { DOH_ORIGINS } from "../shared/net-permissions";
+import { DOH_ORIGINS, hasAccess } from "../shared/net-permissions";
 import { loadWeights, WEIGHTS_STORAGE_KEY } from "../shared/weights";
 import { cacheGet, cachePatch, cacheRemove, type DomainCacheRecord } from "./cache";
 import { queuedFetch, singleFlight } from "./net";
@@ -204,8 +204,7 @@ async function runMetaSource(
   } catch (err) {
     // Failure is ambiguous: dead site, or no host access (Firefox with the
     // all-sites permission not granted). Distinguish after the fact.
-    const hasAccess = await browser.permissions.contains({ origins: ["<all_urls>"] }).catch(() => false);
-    if (!hasAccess) {
+    if (!(await hasAccess(["<all_urls>"]))) {
       await patchLive(ascii, { meta: { status: "needs-permission" } });
       return;
     }
@@ -235,7 +234,7 @@ async function runDnsSource(
     await patchLive(ascii, { dns: { status: "ok", data: cached.dns } });
     return;
   }
-  if (!(await browser.permissions.contains({ origins: DOH_ORIGINS }))) {
+  if (!(await hasAccess(DOH_ORIGINS))) {
     await patchLive(ascii, { dns: { status: "needs-permission" } });
     return;
   }

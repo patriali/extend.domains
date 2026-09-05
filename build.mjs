@@ -22,6 +22,7 @@ const shared = {
   version: pkg.version,
   description:
     "Domain intelligence sidebar: registration, DNS, metadata, and age for any highlighted domain.",
+  homepage_url: "https://github.com/patriali/extend.domains",
   permissions: ["storage", "contextMenus"],
   // Keep in sync with src/shared/net-permissions.ts.
   host_permissions: ["https://cloudflare-dns.com/*", "https://dns.google/*"],
@@ -77,6 +78,9 @@ function manifestFor(target) {
   }
   return {
     ...shared,
+    // Firefox takes a plain string here; Chrome MV3 expects an object and
+    // neither store requires the field, so only this side sets it.
+    author: "Danilo Patrial",
     commands: {
       _execute_sidebar_action: {
         suggested_key: { default: "Ctrl+Shift+L", mac: "Command+Shift+L" },
@@ -98,7 +102,20 @@ function manifestFor(target) {
     browser_specific_settings: {
       gecko: {
         id: "extend-domains@danilopatrial",
-        strict_min_version: "115.0",
+        // 140 is the first release that honours data_collection_permissions
+        // (and the current ESR, so enterprise installs are unaffected). Below
+        // it the key is silently ignored and the consent prompt never shows,
+        // which defeats the point of declaring it.
+        strict_min_version: "140.0",
+        // Required by AMO. Mozilla counts anything leaving the local browser as
+        // collection, third parties included — so this is not "none": every
+        // lookup sends the domain to the DoH resolvers, RDAP, and the Wayback
+        // Machine. Nothing reaches the developer (there is no backend) and the
+        // selected text itself never leaves the browser, so browsingActivity is
+        // the whole of it. See PRIVACY.md.
+        data_collection_permissions: {
+          required: ["browsingActivity"],
+        },
       },
     },
   };
